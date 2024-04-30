@@ -4,44 +4,39 @@ import csv
 
 class Dados:
 
-    def __init__(self,path, tipo_dados):
-        self._path = path
-        self._tipo_dados = tipo_dados
-        self.dados = self.leitura_dados()
-        self.nome_colunas = self.get_colums()
+    def __init__(self, dados):
+        self.dados = dados
+        self.nome_colunas = self.__get_colums()
 
 
-    def _leitura_json(self):
+    def __leitura_json(path):
         dados_json = []
-        with open(self._path, 'r') as file:
+        with open(path, 'r') as file:
             dados_json = json.load(file)
 
         return dados_json
 
-    def _leitura_csv(self):
+    def __leitura_csv(path):
         dados_csv = []
-        with open(self._path, 'r') as file:
+        with open(path, 'r') as file:
             spamreader = csv.DictReader(file, delimiter=',')
             for row in spamreader:
                 dados_csv.append(row)
 
         return dados_csv
 
-    def leitura_dados(self):
+    @classmethod
+    def leitura_dados(cls,path,tipo_dados):
         dados = []
-        if self._tipo_dados == 'csv':
-            dados = self._leitura_csv()
+        if tipo_dados == 'csv':
+            dados = cls.__leitura_csv(path)
         
-        if self._tipo_dados == 'json':
-            dados = self._leitura_json()
-
-        if self._tipo_dados == 'list':
-            dados = self._path
-            self._path = 'Lista em memória'
+        if tipo_dados == 'json':
+            dados = cls.__leitura_json(path)
         
-        return dados
+        return Dados(dados)
     
-    def get_colums(self):
+    def __get_colums(self):
         return list(self.dados[-1].keys())
     
     def rename_columns(self, key_map):
@@ -54,7 +49,7 @@ class Dados:
             new_dados.append(dict_temp)
 
         self.dados = new_dados
-        self.nome_colunas = self.get_colums()
+        self.nome_colunas = self.__get_colums()
 
     def join(dadosA,dadosB):
         combined_list = []
@@ -62,12 +57,12 @@ class Dados:
         combined_list.extend(dadosB.dados)
 
         if len(combined_list) == (len(dadosA.dados) + len(dadosB.dados)):
-            return Dados(combined_list, 'list')
+            return Dados(combined_list)
         
         print(f'Problema de acesso')
 
-    def _transforma_dados_tabela(self):
-        nome_colunas = self.get_colums()
+    def __transforma_dados_tabela(self):
+        nome_colunas = self.__get_colums()
         dados_combinado_tabela = [nome_colunas]
 
         try:
@@ -85,7 +80,7 @@ class Dados:
             print(f'Problema com junção de arquivos')
 
     def gravando_arquivo(self, path):
-        dados_combinado_tabela = self._transforma_dados_tabela()
+        dados_combinado_tabela = self.__transforma_dados_tabela()
         try:
             with open(path,'w') as file:
                 writer = csv.writer(file)
