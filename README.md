@@ -1,1 +1,3 @@
-# pipeline_de_dados_Combinando_Python_a_Orienta-o_a_objeto-
+# Pipeline de dados Combinando:  Python a Orientado a objeto
+
+Esse é o primeiro passo para fazer um pipeliine de dados utilizando python
